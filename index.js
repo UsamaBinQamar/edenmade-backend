@@ -1,8 +1,24 @@
 // index.js
 import express from "express";
 import { Sequelize } from "sequelize"; 
+import cors  from "cors";  
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+
 
 const app = express();
+ 
+app.use(cors());
  
 const sequelize = new Sequelize({
     dialect: "mysql",
