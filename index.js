@@ -119,8 +119,15 @@ app.post("/users", async (req, res) => {
             recipeId: recipe.id,
             // Add other relevant fields here
           });
+                  // Calculate delivery date (5 days after createdAt)
+                  const deliveryDate = new Date();
+                  deliveryDate.setDate(deliveryDate.getDate() + 5);
+          
         })
+        
       );
+      
+      
       console.log("11@@@",selectedRecipes)
         res.status(201).json({ message: "User created successfully" });
       } else {

@@ -25,7 +25,10 @@ module.exports = {
           key: 'id',
         },
       },
-      // Add other fields as needed
+      deliveryDate: {
+        type: Sequelize.DATE,
+        allowNull: true, // Set to true if the delivery date can be nullable
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
