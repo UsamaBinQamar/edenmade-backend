@@ -96,7 +96,21 @@ app.post("/users", async (req, res) => {
   
         // Create order details with random recipes based on selected categories
         // const orderDetails = await generateOrderDetails(newUser.id, categories, numberOfDishesPerWeek);
-        
+             // Retrieve associated recipes for the selected categories
+      const recipes = await sequelize.query(
+        `SELECT Recipes.* FROM Recipes
+          JOIN Categories ON Recipes.categoryId = Categories.id
+          JOIN UsersCategories ON UsersCategories.categoryId = Categories.id
+          WHERE UsersCategories.userId = :userId`,
+        {
+          replacements: { userId: newUser.id },
+          type: Sequelize.QueryTypes.SELECT,
+        }
+      );
+      console.log("@@@recipes",recipes)
+      const shuffledRecipes = recipes.sort(() => 1 - Math.random());
+      const selectedRecipes = shuffledRecipes.slice(0, numberOfDishesPerWeek);
+      console.log("11@@@",selectedRecipes)
         res.status(201).json({ message: "User created successfully" });
       } else {
         res.status(400).json({ error: "Categories are required" });
