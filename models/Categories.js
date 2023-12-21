@@ -4,7 +4,7 @@ import { Sequelize, DataTypes } from "sequelize";
 
 const sequelize = new Sequelize({
     dialect: "mysql",
-    host: "",
+    host: "localhost", // Replace with your actual database host
     username: "root",
     password: "root",
     database: "edenmade",

@@ -2,19 +2,8 @@
 import express from "express";
 import { Sequelize } from "sequelize"; 
 import cors  from "cors";  
-
-
-
-
-
-
-
-
-
-
- 
- 
-
+import User from "./models/User.js"; 
+import UsersCategories from "./models/userscategories.js" 
 
 const app = express();
  
@@ -25,7 +14,7 @@ const sequelize = new Sequelize({
     host: "localhost", // Replace with your actual database host
     username: "root",
     password: "root",
-    database: "edenmade",
+    database: "edenmade", 
 });
 
 // Sync the model with the database
@@ -69,78 +58,107 @@ app.get("/recipes", async (req, res) => {
 });
 app.post("/users", async (req, res) => {
     try {
-        const { firstName, lastName, phoneNumber, address, city, postalCode ,numberOfPeople,numberOfDishesPerWeek} = req.body;
-
-        const query = `
-            INSERT INTO Users (firstName, lastName, phoneNumber, address, city, postalCode,numberOfPeople,numberOfDishesPerWeek, createdAt, updatedAt)
-            VALUES (:firstName, :lastName, :phoneNumber, :address, :city, :postalCode ,numberOfPeople,numberOfDishesPerWeek,NOW(), NOW())
-        `;
-
-        await sequelize.query(query, {
-            replacements: {
-                firstName,
-                lastName,
-                phoneNumber,
-                address,
-                city,
-                postalCode,numberOfPeople,numberOfDishesPerWeek
-            },
-            type: Sequelize.QueryTypes.INSERT,
-        });
-
+      const {
+        firstName,
+        lastName,
+        phoneNumber,
+        address,
+        city,
+        postalCode,
+        numberOfPeople,
+        numberOfDishesPerWeek,
+        categories,
+        email,
+      } = req.body;
+  
+      // Create a new user
+      const newUser = await User.create({
+        firstName,
+        lastName,
+        phoneNumber,
+        address,
+        city,
+        postalCode,
+        numberOfPeople,
+        numberOfDishesPerWeek,email
+      });
+  
+      // Associate the user with multiple categories
+      if (categories && categories.length > 0) {
+        await Promise.all(
+          categories.map(async (categoryId) => {
+            await UsersCategories.create({
+              userId: newUser.id,
+              categoryId,
+            });
+          })
+        );
+  
+        // Create order details with random recipes based on selected categories
+        // const orderDetails = await generateOrderDetails(newUser.id, categories, numberOfDishesPerWeek);
+        
         res.status(201).json({ message: "User created successfully" });
+      } else {
+        res.status(400).json({ error: "Categories are required" });
+      }
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal Server Error" });
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
-});
+  });
+  
+  
+  
+  // Function to get a random recipe ID based on categories
+  
+// app.post("/users", async (req, res) => {
+//     try {
+//         const {
+//             firstName,
+//             lastName,
+//             phoneNumber,
+//             address,
+//             city,
+//             postalCode,
+//             numberOfPeople,
+//             numberOfDishesPerWeek,
+//             categories, // Assuming categories is an array of category IDs
+//         } = req.body;
+
+//         // Create a new user
+//         const newUser = await User.create({
+//             firstName,
+//             lastName,
+//             phoneNumber,
+//             address,
+//             city,
+//             postalCode,
+//             numberOfPeople,
+//             numberOfDishesPerWeek,
+//         });
+
+//         // Associate the user with multiple categories
+//         if (categories && categories.length > 0) {
+//             await Promise.all(
+//                 categories.map(async (categoryId) => {
+//                     await UsersCategories.create({
+//                         userId: newUser.id,
+//                         categoryId,
+//                     });
+//                 })
+//             );
+//         }
+
+//         res.status(201).json({ message: "User created successfully" });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ error: "Internal Server Error" });
+//     }
+// });
+ 
 
 app.listen(8800, () => {
     console.log("Connected");
 });
 
 
-
-// import express from "express";
-// import { Sequelize } from "sequelize"; 
-// import Category from "../models/Categories.js"; 
-
-// const app = express();
-
-// const sequelize = new Sequelize({
-//     dialect: "mysql",
-//     host: "",
-//     username: "root",
-//     password: "root",
-//     database: "edenmade",
-// });
-
- 
-// sequelize.sync({ force: true }).then(() => {
-//     console.log("Database synced");
-// });
-
-
-// app.get("/", (req, res) => {
-//     res.json("hello from backend");
-// });
-// app.get("/categories",(req,res)=>{
-//     const q ="SELECT * FROM edenmade.categories;"
-//     db.query(q,(err,data)=>{
-//         if(err) return res.json(err)
-//         return res.json(data)
-//     })
-
-// })
- 
- 
-
-// app.listen(8800, () => {
-//     console.log("Connected");
-// });
-
-
-// npx sequelize-cli db:seed:all
-// npx sequelize-cli seed:generate --name demo-recipies
-// npx sequelize-cli db:migrate
-// npx sequelize-cli migration:generate --name create-recipes 

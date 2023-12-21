@@ -9,7 +9,7 @@ module.exports = {
             firstName: {
                 type: Sequelize.STRING,
                 allowNull: false,
-            },
+            }, 
             lastName: {
                 type: Sequelize.STRING,
                 allowNull: false,
@@ -38,25 +38,29 @@ module.exports = {
                 type: Sequelize.INTEGER,
                 allowNull: true,
             },
-            categoryId: {
-                type: Sequelize.INTEGER,
-                allowNull: true,
-                references: {
-                    model: 'Categories',
-                    key: 'id',
-                },
-                onUpdate: 'CASCADE',
-                onDelete: 'SET NULL',
-            },
-            recipeId: {
-                type: Sequelize.INTEGER,
-                allowNull: true,
-                references: {
-                    model: 'Recipes',
-                    key: 'id',
-                },
-                onUpdate: 'CASCADE',
-                onDelete: 'SET NULL',
+            // categoryId: {
+            //     type: Sequelize.INTEGER,
+            //     allowNull: true,
+            //     references: {
+            //         model: 'Categories',
+            //         key: 'id',
+            //     },
+            //     onUpdate: 'CASCADE',
+            //     onDelete: 'SET NULL',
+            // },
+            // recipeId: {
+            //     type: Sequelize.INTEGER,
+            //     allowNull: true,
+            //     references: {
+            //         model: 'Recipes',
+            //         key: 'id',
+            //     },
+            //     onUpdate: 'CASCADE',
+            //     onDelete: 'SET NULL',
+            // },  
+            email: {
+                type: Sequelize.STRING,
+                allowNull: false, 
             },
             createdAt: {
                 type: Sequelize.DATE,
@@ -66,6 +70,7 @@ module.exports = {
                 type: Sequelize.DATE,
                 allowNull: false,
             },
+          
         });
     },
 
