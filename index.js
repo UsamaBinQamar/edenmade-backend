@@ -3,7 +3,8 @@ import express from "express";
 import { Sequelize } from "sequelize"; 
 import cors  from "cors";  
 import User from "./models/User.js"; 
-import UsersCategories from "./models/userscategories.js" 
+import UsersCategories from "./models/userscategories.js"  
+import OrderDetails from "./models/OrderDetailssss.js"
 
 const app = express();
  
@@ -110,6 +111,16 @@ app.post("/users", async (req, res) => {
       console.log("@@@recipes",recipes)
       const shuffledRecipes = recipes.sort(() => 1 - Math.random());
       const selectedRecipes = shuffledRecipes.slice(0, numberOfDishesPerWeek);
+      await Promise.all(
+        selectedRecipes.map(async (recipe) => {
+          // Create order details using recipe.id and any other relevant information
+          await OrderDetails.create({
+            userId: newUser.id,
+            recipeId: recipe.id,
+            // Add other relevant fields here
+          });
+        })
+      );
       console.log("11@@@",selectedRecipes)
         res.status(201).json({ message: "User created successfully" });
       } else {
