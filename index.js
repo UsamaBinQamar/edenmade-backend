@@ -117,11 +117,11 @@ app.post("/users", async (req, res) => {
           await OrderDetails.create({
             userId: newUser.id,
             recipeId: recipe.id,
+            email: email,
             // Add other relevant fields here
-          });
-                  // Calculate delivery date (5 days after createdAt)
-                  const deliveryDate = new Date();
-                  deliveryDate.setDate(deliveryDate.getDate() + 5);
+          }); 
+        const deliveryDate = new Date();
+              deliveryDate.setDate(deliveryDate.getDate() + 5);
           
         })
         
@@ -138,6 +138,56 @@ app.post("/users", async (req, res) => {
       res.status(500).json({ error: "Internal Server Error" });
     }
   });
+  // ... (your existing imports)
+
+  // app.post("/getUserOrderDetails", async (req, res) => {
+  //   try {
+  //     const { email } = req.body;
+  
+  //     // Execute the raw SQL query using sequelize.query
+  //     const data = await sequelize.query(
+  //       'SELECT * FROM edenmade.orderdetails WHERE email = :email',
+  //       {
+  //         replacements: { email: email },
+  //         type: Sequelize.QueryTypes.SELECT,
+  //       }
+  //     );
+  
+  //     // Send the fetched data in the response
+  //     res.status(200).json({ data: data });
+  //   } catch (error) {
+  //     console.error(error);
+  //     res.status(500).json({ error: "Internal Server Error" });
+  //   }
+  // });
+  app.post("/getUserOrderDetails", async (req, res) => {
+    try {
+      const { email } = req.body;
+  
+      // Execute the raw SQL query using sequelize.query
+      const data = await sequelize.query(
+        'SELECT OrderDetails.*, Recipes.title as recipeName, Categories.name as categoryName ' +
+        'FROM OrderDetails ' +
+        'INNER JOIN Recipes ON OrderDetails.recipeId = Recipes.id ' +
+        'INNER JOIN Categories ON Recipes.categoryId = Categories.id ' +
+        'WHERE OrderDetails.email = :email',
+        {
+          replacements: { email: email },
+          type: Sequelize.QueryTypes.SELECT,
+        }
+      );
+  
+      // Send the fetched data in the response
+      res.status(200).json({ data: data });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
+  
+
+// ... (rest of your existing code)
+
   
   
   

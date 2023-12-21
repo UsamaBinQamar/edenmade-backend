@@ -23,9 +23,14 @@ const OrderDetails = sequelize.define('OrderDetails', {
   recipeId: {
     type: DataTypes.INTEGER,
     allowNull: false,
-  }, deliveryDate: {
+  },
+   deliveryDate: {
     type: DataTypes.DATE,
     allowNull: true,
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   // Add other fields as needed
 });
