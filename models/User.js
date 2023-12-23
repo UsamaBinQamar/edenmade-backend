@@ -18,7 +18,6 @@ const User = sequelize.define("User", {
         autoIncrement: true,
         primaryKey: true,
     },
-    
     firstName: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -43,17 +42,13 @@ const User = sequelize.define("User", {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    numberOfPeople: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-    },
-    numberOfDishesPerWeek: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-    },
     email: {
         type: DataTypes.STRING,
-        allowNull: false,  
+        allowNull: false,
+    },
+    isFirstTimeLogin: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true, // Default value is true
     },
 });
 

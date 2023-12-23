@@ -1,6 +1,4 @@
 import { Sequelize, DataTypes } from 'sequelize';
-import Category from './Categories.js';
-import Recipe from './Recipes.js';
 
 const sequelize = new Sequelize({
   dialect: 'mysql',
@@ -20,23 +18,28 @@ const OrderDetails = sequelize.define('OrderDetails', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  recipeId: {
+  numberOfPeople: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-   deliveryDate: {
+  recipesPerWeek: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  deliveryDate: {
     type: DataTypes.DATE,
     allowNull: true,
   },
-  email: {
-    type: DataTypes.STRING,
+  createdAt: {
+    type: DataTypes.DATE,
     allowNull: false,
+    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
   },
-  // Add other fields as needed
+  updatedAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
+  },
 });
-
-// Define associations between OrderDetails, Category, and Recipe
-OrderDetails.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
-OrderDetails.belongsTo(Recipe, { foreignKey: 'recipeId', as: 'recipe' });
 
 export default OrderDetails;

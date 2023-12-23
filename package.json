@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "type": "module",
+
   "scripts": {
     "edenmade": "echo \"Error: no edenmade specified\" && exit 1"
   },

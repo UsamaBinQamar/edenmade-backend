@@ -4,7 +4,9 @@ import { Sequelize } from "sequelize";
 import cors  from "cors";  
 import User from "./models/User.js"; 
 import UsersCategories from "./models/userscategories.js"  
-import OrderDetails from "./models/OrderDetailssss.js"
+import OrderDetails from "./models/orderdetails.js"
+import UsersOrderRecipes from "./models/userorderrecipes.js"
+
 
 const app = express();
  
@@ -56,88 +58,175 @@ app.get("/recipes", async (req, res) => {
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
     }
-});
-app.post("/users", async (req, res) => {
-    try {
+});app.post("/users", async (req, res) => {
+  try {
       const {
-        firstName,
-        lastName,
-        phoneNumber,
-        address,
-        city,
-        postalCode,
-        numberOfPeople,
-        numberOfDishesPerWeek,
-        categories,
-        email,
+          firstName,
+          lastName,
+          phoneNumber,
+          address,
+          city,
+          postalCode,
+          categories,
+          email,
       } = req.body;
-  
+
       // Create a new user
       const newUser = await User.create({
-        firstName,
-        lastName,
-        phoneNumber,
-        address,
-        city,
-        postalCode,
-        numberOfPeople,
-        numberOfDishesPerWeek,email
+          firstName,
+          lastName,
+          phoneNumber,
+          address,
+          city,
+          postalCode,
+          email,
       });
-  
+
       // Associate the user with multiple categories
       if (categories && categories.length > 0) {
-        await Promise.all(
-          categories.map(async (categoryId) => {
-            await UsersCategories.create({
-              userId: newUser.id,
-              categoryId,
-            });
-          })
-        );
-  
-        // Create order details with random recipes based on selected categories
-        // const orderDetails = await generateOrderDetails(newUser.id, categories, numberOfDishesPerWeek);
-             // Retrieve associated recipes for the selected categories
-      const recipes = await sequelize.query(
-        `SELECT Recipes.* FROM Recipes
-          JOIN Categories ON Recipes.categoryId = Categories.id
-          JOIN UsersCategories ON UsersCategories.categoryId = Categories.id
-          WHERE UsersCategories.userId = :userId`,
-        {
-          replacements: { userId: newUser.id },
-          type: Sequelize.QueryTypes.SELECT,
-        }
-      );
-      console.log("@@@recipes",recipes)
-      const shuffledRecipes = recipes.sort(() => 1 - Math.random());
-      const selectedRecipes = shuffledRecipes.slice(0, numberOfDishesPerWeek);
-      await Promise.all(
-        selectedRecipes.map(async (recipe) => {
-          // Create order details using recipe.id and any other relevant information
-          await OrderDetails.create({
-            userId: newUser.id,
-            recipeId: recipe.id,
-            email: email,
-            // Add other relevant fields here
-          }); 
-        const deliveryDate = new Date();
-              deliveryDate.setDate(deliveryDate.getDate() + 5);
+          await Promise.all(
+              categories.map(async (categoryId) => {
+                  await UsersCategories.create({
+                      userId: newUser.id,
+                      categoryId,
+                  });
+              })
+          );
+
+          // Retrieve associated recipes for the selected categories
+          const recipes = await sequelize.query(
+              `SELECT Recipes.* FROM Recipes
+             JOIN Categories ON Recipes.categoryId = Categories.id
+             JOIN UsersCategories ON UsersCategories.categoryId = Categories.id
+             WHERE UsersCategories.userId = :userId`,
+              {
+                  replacements: { userId: newUser.id },
+                  type: Sequelize.QueryTypes.SELECT,
+              }
+          );
           
-        })
-        
-      );
-      
-      
-      console.log("11@@@",selectedRecipes)
-        res.status(201).json({ message: "User created successfully" });
+
+          const shuffledRecipes = recipes.sort(() => 1 - Math.random());
+          console.log("@@@",shuffledRecipes)
+          const selectedRecipes = shuffledRecipes.slice(0, categories.length); // Use categories.length instead of numberOfDishesPerWeek
+          console.log("@@@selectedRecipes",shuffledRecipes)
+          // Associate user with selected recipes
+          await Promise.all(
+              selectedRecipes.map(async (recipe) => {
+                  await UsersOrderRecipes.create({
+                      userId: newUser.id,
+                      recipeId: recipe.id,
+                  });
+              })
+          );
+
+          // Create order details for each selected recipe
+          await Promise.all(
+              selectedRecipes.map(async (recipe) => {
+                  await OrderDetails.create({
+                      userId: newUser.id,
+                      recipeId: recipe.id,
+                      email,
+                      // Add other relevant fields here
+                  });
+
+                  // Set a delivery date for the order detail (adjust as needed)
+                  const deliveryDate = new Date();
+                  deliveryDate.setDate(deliveryDate.getDate() + 5);
+              })
+          );
+
+          res.status(201).json({ message: "User created successfully" });
       } else {
-        res.status(400).json({ error: "Categories are required" });
+          res.status(400).json({ error: "Categories are required" });
       }
-    } catch (error) {
+  } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Internal Server Error" });
-    }
-  });
+  }
+});
+
+// app.post("/users", async (req, res) => {
+//     try {
+//       const {
+//         firstName,
+//         lastName,
+//         phoneNumber,
+//         address,
+//         city,
+//         postalCode,
+//         numberOfPeople,
+//         numberOfDishesPerWeek,
+//         categories,
+//         email,
+//       } = req.body;
+  
+//       // Create a new user
+//       const newUser = await User.create({
+//         firstName,
+//         lastName,
+//         phoneNumber,
+//         address,
+//         city,
+//         postalCode,
+//         numberOfPeople,
+//         numberOfDishesPerWeek,email
+//       });
+  
+//       // Associate the user with multiple categories
+//       if (categories && categories.length > 0) {
+//         await Promise.all(
+//           categories.map(async (categoryId) => {
+//             await UsersCategories.create({
+//               userId: newUser.id,
+//               categoryId,
+//             });
+//           })
+//         );
+  
+//         // Create order details with random recipes based on selected categories
+//         // const orderDetails = await generateOrderDetails(newUser.id, categories, numberOfDishesPerWeek);
+//              // Retrieve associated recipes for the selected categories
+//       const recipes = await sequelize.query(
+//         `SELECT Recipes.* FROM Recipes
+//           JOIN Categories ON Recipes.categoryId = Categories.id
+//           JOIN UsersCategories ON UsersCategories.categoryId = Categories.id
+//           WHERE UsersCategories.userId = :userId`,
+//         {
+//           replacements: { userId: newUser.id },
+//           type: Sequelize.QueryTypes.SELECT,
+//         }
+//       );
+//       console.log("@@@recipes",recipes)
+//       const shuffledRecipes = recipes.sort(() => 1 - Math.random());
+//       const selectedRecipes = shuffledRecipes.slice(0, numberOfDishesPerWeek);
+//       await Promise.all(
+//         selectedRecipes.map(async (recipe) => {
+//           // Create order details using recipe.id and any other relevant information
+//           await OrderDetails.create({
+//             userId: newUser.id,
+//             recipeId: recipe.id,
+//             email: email,
+//             // Add other relevant fields here
+//           }); 
+//         const deliveryDate = new Date();
+//               deliveryDate.setDate(deliveryDate.getDate() + 5);
+          
+//         })
+        
+//       );
+      
+      
+//       console.log("11@@@",selectedRecipes)
+//         res.status(201).json({ message: "User created successfully" });
+//       } else {
+//         res.status(400).json({ error: "Categories are required" });
+//       }
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ error: "Internal Server Error" });
+//     }
+//   });
   // ... (your existing imports)
 
   // app.post("/getUserOrderDetails", async (req, res) => {
