@@ -6,7 +6,7 @@ import OrderDetails from './orderdetails.js';
 
 const sequelize = new Sequelize({
   dialect: 'mysql',
-  host: 'localhost', // Replace with your actual database host
+  host: 'localhost',
   username: 'root',
   password: 'root',
   database: 'edenmade',
@@ -35,12 +35,18 @@ const UserOrderRecipes = sequelize.define('UserOrderRecipes', {
     allowNull: false,
   },
   // Add other fields as needed
+  // For example:
+  // someOtherField: {
+  //   type: DataTypes.STRING,
+  //   allowNull: true,
+  // },
 });
 
-// Define associations between UserOrderRecipes, User, Recipes, Category, and OrderDetails
+// Define associations between UserOrderRecipes, User, Recipes, Category, and OrderDetailsUserOrderRecipes.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 UserOrderRecipes.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 UserOrderRecipes.belongsTo(Recipes, { foreignKey: 'recipeId', as: 'recipe' });
 UserOrderRecipes.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
 UserOrderRecipes.belongsTo(OrderDetails, { foreignKey: 'orderDetailId', as: 'orderDetail' });
+
 
 export default UserOrderRecipes;
