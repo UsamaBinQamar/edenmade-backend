@@ -120,7 +120,7 @@ app.post("/users", async (req, res) => {
           
          // Create 6 OrderDetails records
      // Create OrderDetails records based on numberOfDishesPerWeek
-const orderDetailsPromises = Array.from({ length: req.body.numberOfDishesPerWeek }, (_, i) => {
+const orderDetailsPromises = Array.from({ length: 6 }, (_, i) => {
     const deliveryDate = addDays(new Date(), 7 * (i + 1)); // Add 7 days for each order starting from the next week
 
     return OrderDetails.create({
@@ -162,8 +162,33 @@ const orderDetailsPromises = Array.from({ length: req.body.numberOfDishesPerWeek
  // Assuming you want to fetch order details based on user ID
  // Your existing code...
 
-// API endpoint to get all data from UserOrderRecipes using raw query
-app.post('/orderdetails', async (req, res) => {
+app.post('/getUserFromEmail', async (req, res) => {
+    try {
+      const userId = req.body.email;
+  
+      if (!userId) {
+        return res.status(400).json({ error: 'ID is required' });
+      }
+  
+      const query = 'SELECT * FROM edenmade.users WHERE email = :userId;';
+      const userOrderRecipes = await sequelize.query(query, {
+        type: Sequelize.QueryTypes.SELECT,
+        replacements: { userId },
+      });
+  
+      if (userOrderRecipes.length > 0) {
+        res.json(userOrderRecipes);
+      } else {
+        res.status(404).json({ error: 'User Order Recipes not found for the given ID' });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+  
+// API endpoint to get all data from orderdetails using raw query from userid
+  app.post('/orderdetails', async (req, res) => {
     try {
       const userId = req.body.userId;
   
@@ -188,6 +213,7 @@ app.post('/orderdetails', async (req, res) => {
     }
   });
 
+// API endpoint to get all data from userorderrecipes using raw query from userid
   app.post('/userorderrecipes', async (req, res) => {
     try {
       // Assuming orderdetailid is sent in the request body
@@ -229,30 +255,108 @@ app.post('/orderdetails', async (req, res) => {
   
   
   // Your existing code...
+  // app.post('/userOrderRecipesDetail', async (req, res) => {
+  //   try {
+  //     const orderDetailId = req.body.orderDetailId;  // Corrected variable name
+  
+  //     if (!orderDetailId) {
+  //       return res.status(400).json({ error: 'orderDetailId is required' });
+  //     }
+  
+  //     const query = `
+  //       SELECT 
+  //         uor.*,
+  //         r.title as recipeName,
+  //         c.name as categoryName
+  //       FROM 
+  //         edenmade.userorderrecipes uor
+  //       JOIN 
+  //         Recipes r ON uor.recipeId = r.id
+  //       JOIN 
+  //         Categories c ON uor.categoryId = c.id
+  //       WHERE 
+  //         uor.orderDetailId = :orderDetailId;
+          
+  //     `;
+  
+  //     const userOrderRecipes = await sequelize.query(query, {
+  //       type: Sequelize.QueryTypes.SELECT,
+  //       replacements: { orderDetailId },
+  //     });
+  
+  //     if (userOrderRecipes.length > 0) {
+  //       res.json(userOrderRecipes);
+  //     } else {
+  //       res.status(404).json({ error: 'User Order Recipes not found for the given orderDetailId' });
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     res.status(500).json({ error: 'Internal Server Error' });
+  //   }
+  // });
   app.post('/userOrderRecipesDetail', async (req, res) => {
     try {
-      const userId = req.body.orderDetail;
-  
-      if (!userId) {
-        return res.status(400).json({ error: 'ID is required' });
-      }
-  
-      const query = 'SELECT * FROM edenmade.userorderrecipes WHERE orderDetailId = :userId;';
-      const userOrderRecipes = await sequelize.query(query, {
-        type: Sequelize.QueryTypes.SELECT,
-        replacements: { userId },
-      });
-  
-      if (userOrderRecipes.length > 0) {
-        res.json(userOrderRecipes);
-      } else {
-        res.status(404).json({ error: 'User Order Recipes not found for the given ID' });
-      }
+        const orderDetailId = req.body.orderDetailId;
+
+        if (!orderDetailId) {
+            return res.status(400).json({ error: 'orderDetailId is required' });
+        }
+
+        const query = `
+        SELECT 
+            DISTINCT uor.orderDetailId,
+            uor.*,
+            r.id as recipeId,
+            r.title as recipeName,
+            c.name as categoryName
+        FROM 
+            edenmade.userorderrecipes uor
+        JOIN 
+            Recipes r ON uor.recipeId = r.id
+        JOIN 
+            Categories c ON uor.categoryId = c.id
+        WHERE 
+            uor.orderDetailId = :orderDetailId;
+    `;
+    
+
+        const userOrderRecipes = await sequelize.query(query, {
+            type: Sequelize.QueryTypes.SELECT,
+            replacements: { orderDetailId },
+        });
+
+        if (userOrderRecipes.length > 0) {
+            // Extract recipeIds from the result
+            const recipeIds = userOrderRecipes.map(recipe => recipe.recipeId);
+
+            // Fetch recipe names based on recipeIds
+            const recipes = await Recipes.findAll({
+                attributes: ['id', 'title'],
+                where: {
+                    id: recipeIds,
+                },
+            });
+
+            // Map the recipe names to the userOrderRecipes result
+            const resultWithRecipeNames = userOrderRecipes.map(userOrderRecipe => {
+                const matchingRecipe = recipes.find(recipe => recipe.id === userOrderRecipe.recipeId);
+                return {
+                    ...userOrderRecipe,
+                    recipeName: matchingRecipe ? matchingRecipe.title : null,
+                };
+            });
+
+            res.json(resultWithRecipeNames);
+        } else {
+            res.status(404).json({ error: 'User Order Recipes not found for the given orderDetailId' });
+        }
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-  });
+});
+
+  
   app.listen(8801, () => {
     console.log('Connected');
   });
