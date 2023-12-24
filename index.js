@@ -318,7 +318,6 @@ app.post('/getUserFromEmail', async (req, res) => {
         WHERE 
             uor.orderDetailId = :orderDetailId;
     `;
-    
 
         const userOrderRecipes = await sequelize.query(query, {
             type: Sequelize.QueryTypes.SELECT,
@@ -337,14 +336,14 @@ app.post('/getUserFromEmail', async (req, res) => {
                 },
             });
 
+            // Create a map for quicker lookup
+            const recipeMap = new Map(recipes.map(recipe => [recipe.id, recipe.title]));
+
             // Map the recipe names to the userOrderRecipes result
-            const resultWithRecipeNames = userOrderRecipes.map(userOrderRecipe => {
-                const matchingRecipe = recipes.find(recipe => recipe.id === userOrderRecipe.recipeId);
-                return {
-                    ...userOrderRecipe,
-                    recipeName: matchingRecipe ? matchingRecipe.title : null,
-                };
-            });
+            const resultWithRecipeNames = userOrderRecipes.map(userOrderRecipe => ({
+                ...userOrderRecipe,
+                recipeName: recipeMap.get(userOrderRecipe.recipeId) || null,
+            }));
 
             res.json(resultWithRecipeNames);
         } else {
@@ -355,6 +354,7 @@ app.post('/getUserFromEmail', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
   
   app.listen(8801, () => {
