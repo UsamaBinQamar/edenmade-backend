@@ -1,7 +1,7 @@
 {
   "development": {
-    "username": "root",
-    "password": "root",
+    "username": "root", 
+    "password": "ProfitPoint/99",
     "database": "edenmade",
     "host": "",
     "dialect": "mysql"

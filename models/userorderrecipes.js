@@ -6,9 +6,9 @@ import OrderDetails from './orderdetails.js';
 
 const sequelize = new Sequelize({
   dialect: 'mysql',
-  host: 'localhost',
+  host: '127.0.0.1',
   username: 'root',
-  password: 'root',
+  password: 'ProfitPoint/99',
   database: 'edenmade',
 });
 

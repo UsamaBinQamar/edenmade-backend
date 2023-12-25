@@ -4,9 +4,9 @@ import { Sequelize, DataTypes } from "sequelize";
 
 const sequelize = new Sequelize({
     dialect: "mysql",
-    host: "localhost", // Replace with your actual database host
+    host: "127.0.0.1", // Replace with your actual database host
     username: "root",
-    password: "root",
+    password: "ProfitPoint/99",
     database: "edenmade",
 });
 
