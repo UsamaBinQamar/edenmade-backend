@@ -27,11 +27,26 @@ const mailOptions = {
   text: "Hello world?", // plain text body
   html: `
   <html>
+    <head>
+    <style>
+      @media only screen and (max-width: 600px) {
+        #root {
+          width: 100% !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+          <h3 style="color: var(--Primary, #FF6900); font-family: Montserrat; font-size: 24px; font-style: normal; font-weight: 900; line-height: 26.4px; text-align: center; margin-top: 10px;">EDENMADE</h3>
+    
+  </body>
   <head>
     <style>
       #root {
-        /* background-color: #f8f4f4; */
-        background-color: black;
+        /* background-color: #FF6900; */
+        background-color: #FF6900;
         width: 100%;
         /* margin-left: 10%;
         margin-right: 10%; */
@@ -53,7 +68,7 @@ const mailOptions = {
             <tr>
               <div style="margin: 5px">
                 <th>
-                  <a href="http://staging.taxeezy.co.uk/">
+                  <a href="#">
                     <img
                       src="https://taxeezy.s3.amazonaws.com/facebook-24.png"
                       alt="Taxeezy"
@@ -65,7 +80,7 @@ const mailOptions = {
               </div>
               <div style="margin: 5px">
                 <th>
-                  <a href="http://staging.taxeezy.co.uk/  ">
+                  <a href="#">
                     <img
                       src="https://taxeezy.s3.amazonaws.com/instagram-24.png"
                       alt="Taxeezy"
@@ -77,7 +92,7 @@ const mailOptions = {
               </div>
               <div style="margin: 5px">
                 <th>
-                  <a href="http://staging.taxeezy.co.uk/">
+                  <a href="#">
                     <img
                       src="https://taxeezy.s3.amazonaws.com/linkedin-24.png"
                       alt="Taxeezy"
@@ -90,7 +105,7 @@ const mailOptions = {
             </tr>
           </Table>
 
-          <h3 style="margin-bottom: 0px;  color: rgb(255, 255, 255);text-align: center;">UK Online Tax Return Service</h3>
+          <h3 style="margin-bottom: 0px;  color: rgb(255, 255, 255);text-align: center;">Edenmade.io</h3>
         </div>
       </div>
     </center>
