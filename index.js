@@ -16,13 +16,11 @@ app.use(cors());
  
 const sequelize = new Sequelize({
     dialect: "mysql",
-    host: "127.0.0.1", // Replace with your actual database host
+    host: "localhost" , // Replace with your actual database host
     username: "root",
-    password: "ProfitPoint/99",
+    password: "root",
     database: "edenmade", 
-});
-
-// Sync the model with the database
+}); 
 sequelize.sync({ force: true }).then(() => {
     console.log("Database synced");
 });
