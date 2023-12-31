@@ -1,9 +1,9 @@
 {
   "development": {
     "username": "root", 
-    "password": "ProfitPoint/99",
+    "password": "root",
     "database": "edenmade",
-    "host": "",
+    "host": "localhost",
     "dialect": "mysql"
   },
   "edenmade": {

@@ -6,11 +6,11 @@ import Recipe from "./Recipes.js"; // Assuming the Recipe model is in the same d
 
 const sequelize = new Sequelize({
     dialect: "mysql",
-    host: "localhost" , // Replace with your actual database host
-    username: "root",
-    password: "root",
-    database: "edenmade",
-});
+    host: process.env.DB_HOST,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+  });
 
 const User = sequelize.define("User", {
     id: {

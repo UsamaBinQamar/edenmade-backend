@@ -8,6 +8,10 @@ import OrderDetails from "./models/orderdetails.js"
 import UserOrderRecipes from "./models/userorderrecipes.js"
 import Recipes from "./models/Recipes.js";
 import Category from "./models/Categories.js";
+import dotenv from "dotenv";
+
+dotenv.config(); // Load environment variables from .env
+
 
 
 const app = express();
@@ -15,12 +19,13 @@ const app = express();
 app.use(cors());
  
 const sequelize = new Sequelize({
-    dialect: "mysql",
-    host: "localhost" , // Replace with your actual database host
-    username: "root",
-    password: "root",
-    database: "edenmade", 
-}); 
+  dialect: "mysql",
+  host: process.env.DB_HOST,
+  username: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+});
+
 sequelize.sync({ force: true }).then(() => {
     console.log("Database synced");
 });
@@ -356,7 +361,7 @@ app.post('/getUserFromEmail', async (req, res) => {
 
   
   app.listen(8801, () => {
-    console.log('Connected');
+    console.log('Connected',process.env.DB_HOST);
   });
   
   

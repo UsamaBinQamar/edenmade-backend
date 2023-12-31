@@ -5,13 +5,12 @@ import Category from './Categories.js';
 import OrderDetails from './orderdetails.js';
 
 const sequelize = new Sequelize({
-  dialect: 'mysql',
-  host: '127.0.0.1',
-  username: 'root',
-  password: 'ProfitPoint/99',
-  database: 'edenmade',
+  dialect: "mysql",
+  host: process.env.DB_HOST,
+  username: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
-
 const UserOrderRecipes = sequelize.define('UserOrderRecipes', {
   id: {
     type: DataTypes.INTEGER,
